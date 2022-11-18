@@ -2,9 +2,9 @@
  * Name            : Utsava Kumar Singh
  * Date            : 17-11-2022
  * Description     : MP3 Reader and Editor
- * Input           :	
-		
- * Output          :	
+ * Input           :
+
+ * Output          :
 */
 
 #include <stdio.h>
@@ -47,11 +47,31 @@ int main(int argc, char **argv)
             printf("\t 2.5 -t -> to edit content\n");
             printf("\t 2.6 -c -> to edit comment\n\n");
             dash(55); printf("\n");
-            
         }
         else if(operation == e_view)
         {
-            printf("USAGE :\n");
+            printf(" SELECTED VIEW DETAILS \n");
+            TagViewInfo tagvInfo;
+            if(read_and_validate_view_args(argv, &tagvInfo) == e_success)
+            {
+                printf("INFO : Read and validate function is successfully executed\n");
+                // viewing tags
+                if(do_viewing(&tagvInfo) == e_success)
+                {
+                    printf("INFO : ## Viewing done successfully ##\n");
+                    fclose(tagvInfo.fptr_mp3);
+                }
+                else
+                {
+                    printf("ERROR : Viewing operation failed\n");
+                    return 1;
+                }
+            }
+            else
+            {
+                printf("ERROR : Read and validate function is failure\n");
+                return 1;
+            }
         }
         else if(operation == e_edit)
         {

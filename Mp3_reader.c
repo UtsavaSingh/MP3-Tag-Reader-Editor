@@ -15,7 +15,6 @@
 
 /* Check operation type */
 OperationType check_operation_type(int argc, char *argv[]);
-void dash(int n);
 
 int main(int argc, char **argv)
 {
@@ -50,15 +49,15 @@ int main(int argc, char **argv)
         }
         else if(operation == e_view)
         {
-            printf(" SELECTED VIEW DETAILS \n");
+            printf("\n"); dash(20); printf(" SELECTED VIEW DETAILS "); dash(20); printf("\n\n\n");
             TagViewInfo tagvInfo;
             if(read_and_validate_view_args(argv, &tagvInfo) == e_success)
             {
-                printf("INFO : Read and validate function is successfully executed\n");
+                //printf("INFO : Read and validate function is successfully executed\n");
                 // viewing tags
                 if(do_viewing(&tagvInfo) == e_success)
                 {
-                    printf("INFO : ## Viewing done successfully ##\n");
+                    dash(15); printf(" DETAILS DISPLAYED SUCCESSFULLY "); dash(16); printf("\n\n");
                     fclose(tagvInfo.fptr_mp3);
                 }
                 else

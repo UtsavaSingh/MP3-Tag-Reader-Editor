@@ -10,9 +10,10 @@ typedef struct _TagViewInfo // Structure to store tagging information.
     FILE *fptr_mp3;
     uint info_size;
     uint bits_per_pixel;
-    char image_data[100];
+    char tag[5];
+    char tag_data[100];
     char title[100], artist[100], album[100],
-         Composer[100], year[100], genre[100];
+         composer[100], year[10], genre[20];
 } TagViewInfo;
 
 /* Read and validate View args from argv */
@@ -23,4 +24,12 @@ Status do_viewing(TagViewInfo *tagvInfo);
 
 /* Get File pointer for mp3 file */
 Status open_mp3_file(TagViewInfo *tagvInfo);
+
+Status tag_reader(TagViewInfo *tagvInfo);
+
+Status tag_data_storage(TagViewInfo *tagvInfo);
+
+Status tag_data_view(TagViewInfo *tagvInfo);
+
+void dash(int n);
 #endif

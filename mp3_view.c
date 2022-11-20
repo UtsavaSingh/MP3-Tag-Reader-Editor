@@ -41,17 +41,23 @@ Status do_viewing(TagViewInfo *tagvInfo)
     }
     char str[5];
     fread(&str, sizeof(char), 4, tagvInfo->fptr_mp3);
-    //printf("%s\n", str);
-    fseek(tagvInfo->fptr_mp3, 10, SEEK_SET);
-    for(uint i=0;i<8;i++)
+    str[4] = '\0';
+    if(strncmp(str, "ID3", 3) == 0)
     {
-        tag_reader(tagvInfo);
-        tag_data_storage(tagvInfo);
+        fseek(tagvInfo->fptr_mp3, 10, SEEK_SET);
+        for(uint i=0;i<8;i++)
+        {
+            tag_reader(tagvInfo);
+            tag_data_storage(tagvInfo);
+        }
+        tag_data_view(tagvInfo);
+        return e_success;
     }
-    tag_data_view(tagvInfo);
-
-
-    return e_success;
+    else
+    {
+        printf("ERROR : %s is not an ID3V2 type mp3 file\n", tagvInfo->mp3_fname);
+        return e_failure;
+    }
 }
 
 /*
@@ -116,6 +122,7 @@ Status tag_reader(TagViewInfo *tagvInfo)
             fseek(tagvInfo->fptr_mp3, -1, SEEK_CUR);
         }
     }
+    return e_success;
 }
 
 
@@ -145,6 +152,7 @@ Status tag_data_storage(TagViewInfo *tagvInfo)
     {
         strcpy(tagvInfo->composer, tagvInfo->tag_data);
     }
+    return e_success;
 }
 
 Status tag_data_view(TagViewInfo *tagvInfo)
@@ -159,4 +167,5 @@ Status tag_data_view(TagViewInfo *tagvInfo)
     printf("%-10s  :       %s\n","MUSIC", tagvInfo->genre);
     printf("%-10s  :       %s\n","COMPOSER", tagvInfo->composer);
     dash(63); printf("\n\n");
+    return e_success;
 }

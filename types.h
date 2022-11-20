@@ -20,4 +20,14 @@ typedef enum
     e_unsupported
 } OperationType;
 
+typedef enum
+{
+    e_edit_title,
+    e_edit_album,
+    e_edit_year,
+    e_edit_artist,
+    e_edit_genre,
+    e_edit_composer
+} EditOperationType;
+
 #endif

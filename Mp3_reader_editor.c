@@ -43,8 +43,8 @@ int main(int argc, char **argv)
             printf("\t 2.2 -a -> to edit artist name\n");
             printf("\t 2.3 -A -> to edit album name\n");
             printf("\t 2.4 -y -> to edit year\n");
-            printf("\t 2.5 -t -> to edit content\n");
-            printf("\t 2.6 -c -> to edit comment\n\n");
+            printf("\t 2.5 -g -> to edit content type\n");
+            printf("\t 2.6 -c -> to edit composer\n\n");
             dash(55); printf("\n");
         }
         else if(operation == e_view)
@@ -74,18 +74,45 @@ int main(int argc, char **argv)
         }
         else if(operation == e_edit)
         {
-            printf("USAGE :\n");
+            printf("\n"); dash(20); printf(" SELECTED EDIT DETAILS "); dash(20); printf("\n\n\n");
+            TagEditInfo tageInfo;
+            if(read_and_validate_edit_args(argv, &tageInfo) == e_success)
+            {
+                //printf("INFO : Read and validate function is successfully executed\n");
+                // viewing tags
+                if(do_editing(&tageInfo) == e_success)
+                {
+                    dash(15); printf(" %s EDITED SUCCESSFULLY ", tageInfo.edited_title_name); dash(16); printf("\n\n");
+                    fclose(tageInfo.fptr_mp3_old);
+                    fclose(tageInfo.fptr_mp3_new);
+                }
+                else
+                {
+                    printf("ERROR : Editing operation failed\n");
+                    return 1;
+                }
+            }
+            else
+            {
+                printf("ERROR : Read and validate function is failure\n");
+                return 1;
+            }
         }
         else
         {
-            printf("USAGE :\n");
+            printf("ERROR : Operation is invalid\n");
+            printf("To view please pass like : %s -v mp3filename\n", argv[0]);
+            printf("To edit please pass like : %s -e -t/-a/-A/-m/-y/-c changing_text mp3filename\n", argv[0]);
+            printf("To get help pass like : %s --help\n\n", argv[0]);
         }
     }
     else
     {
-        printf("USAGE :\n");
+        printf("ERROR : Please execute file like below\n");
+        printf("To view please pass like : %s -v mp3filename\n", argv[0]);
+        printf("To edit please pass like : %s -e -t/-a/-A/-m/-y/-c changing_text mp3filename\n", argv[0]);
+        printf("To get help pass like : %s --help\n\n", argv[0]);
     }
-
     return 0;
 }
 

@@ -1,7 +1,7 @@
 /*
  * Name            : Utsava Kumar Singh
  * Date            : 17-11-2022
- * Description     : MP3 Reader and Editor
+ * Description     : MP3 Tag Reader and Editor
  * Input           : For option 'v'
                      a) Source mp3 file name (.mp3)
                      b) Secret text file name (.c / .sh / .txt)

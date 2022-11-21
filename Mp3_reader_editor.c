@@ -2,9 +2,18 @@
  * Name            : Utsava Kumar Singh
  * Date            : 17-11-2022
  * Description     : MP3 Reader and Editor
- * Input           :
+ * Input           : For option 'v'
+                     a) Source mp3 file name (.mp3)
+                     b) Secret text file name (.c / .sh / .txt)
+                     c) Output image file name (.bmp) (optional)
+                       Example - ./Mp3_reader_editor -v <.mp3 file>
+                     For option 'e'
+                     a) Option to edit particular tag (-t/-a/-A/-m/-y/-c)
+                     b) Tag data to replace the chosen tag (" ")
+                     b) Source mp3 file name (.mp3)
+                       Example - ./Mp3_reader_editor -e <-t/-a/-A/-m/-y/-c> <"changing text"> <.mp3 file>
 
- * Output          :
+ * Output          : Show the tag data of the mp3 file
 */
 
 #include <stdio.h>
@@ -53,11 +62,11 @@ int main(int argc, char **argv)
             TagViewInfo tagvInfo;
             if(read_and_validate_view_args(argv, &tagvInfo) == e_success)
             {
-                //printf("INFO : Read and validate function is successfully executed\n");
                 // viewing tags
                 if(do_viewing(&tagvInfo) == e_success)
                 {
                     dash(15); printf(" DETAILS DISPLAYED SUCCESSFULLY "); dash(16); printf("\n\n");
+                    // closing file
                     fclose(tagvInfo.fptr_mp3);
                 }
                 else
@@ -74,17 +83,21 @@ int main(int argc, char **argv)
         }
         else if(operation == e_edit)
         {
-            printf("\n"); dash(20); printf(" SELECTED EDIT DETAILS "); dash(20); printf("\n\n\n");
+            printf("\n"); dash(20); printf(" SELECTED EDIT DETAILS "); dash(20); printf("\n");
             TagEditInfo tageInfo;
             if(read_and_validate_edit_args(argv, &tageInfo) == e_success)
             {
-                //printf("INFO : Read and validate function is successfully executed\n");
-                // viewing tags
+                // Editing tags
                 if(do_editing(&tageInfo) == e_success)
                 {
                     dash(15); printf(" %s EDITED SUCCESSFULLY ", tageInfo.edited_title_name); dash(16); printf("\n\n");
+                    // closing files
                     fclose(tageInfo.fptr_mp3_old);
                     fclose(tageInfo.fptr_mp3_new);
+                    // removing old mp3 file
+                    remove(tageInfo.mp3_fname);
+                    // renaming the new mp3 file by the old mp3 file name
+                    rename("new.mp3", tageInfo.mp3_fname);
                 }
                 else
                 {
@@ -117,7 +130,7 @@ int main(int argc, char **argv)
 }
 
 /* Check for operation to be performed
- * Input: Command line arguments
+ * Input: Command line arguments and count
  * Output: Operation to be performed
  * Return: integer constant corresponding to operation
  */
@@ -145,6 +158,7 @@ OperationType check_operation_type(int argc, char *argv[])
     }
 }
 
+/* Function definition to print n number of dash */
 void dash(int n)
 {
     for(int i = 0; i < n; i++)

@@ -2,7 +2,6 @@
 #include <string.h>
 #include "mp3_view.h"
 #include "types.h"
-//#include "common.h"
 
 /* Function Definitions for Viewing Tags */
 
@@ -26,9 +25,9 @@ Status read_and_validate_view_args(char *argv[], TagViewInfo *tagvInfo)
     }
 }
 
-/* Encoding the secret file data to stego image
- * Input: FILE info of image, secret file and stego image
- * Output: Encodes the data in secret to stego image
+/* Viewing the mp3 file tags
+ * Input: File info structure
+ * Output: Show the mp3 tag details
  * Return: e_success or e_failure;
  */
 Status do_viewing(TagViewInfo *tagvInfo)
@@ -62,7 +61,7 @@ Status do_viewing(TagViewInfo *tagvInfo)
 
 /*
  * Get File pointer for mp3 file
- * Inputs: File info
+ * Inputs: File info structure
  * Output: FILE pointer for mp3 file
  * Return Value: e_success or e_failure, on file errors
  */
@@ -81,10 +80,15 @@ Status open_mp3_file(TagViewInfo *tagvInfo)
     }
     else
     {
-        //printf("INFO : Opened %s\n", tagvInfo -> mp3_fname);
         return e_success;
     }
 }
+
+/* Read the tag information of mp3 file
+ * Input: File info structure
+ * Output: Read and store the tags
+ * Return: e_success or e_failure
+ */
 
 Status tag_reader(TagViewInfo *tagvInfo)
 {
@@ -95,17 +99,14 @@ Status tag_reader(TagViewInfo *tagvInfo)
         fseek(tagvInfo->fptr_mp3, -1, SEEK_CUR);
         fread(tagvInfo->tag, sizeof(char), 4, tagvInfo->fptr_mp3);
         tagvInfo->tag[4]='\0';
-        //printf("%s\n", tagvInfo->tag);
         fseek(tagvInfo->fptr_mp3, 3, SEEK_CUR);
         fread(&size, sizeof(char), 1, tagvInfo->fptr_mp3);
-        //printf("%d\n", n);
         fseek(tagvInfo->fptr_mp3, 2, SEEK_CUR);
         fread(&flag, sizeof(char), 1, tagvInfo->fptr_mp3);
         if(flag == 0)
         {
             fread(tagvInfo->tag_data, sizeof(char), size-1, tagvInfo->fptr_mp3);
             tagvInfo->tag_data[size-1]='\0';
-            //printf("%s\n", tagvInfo->tag_data);
         }
         else
         {
@@ -118,13 +119,17 @@ Status tag_reader(TagViewInfo *tagvInfo)
                 tagvInfo->tag_data[j] = ch;
             }
             tagvInfo->tag_data[m-1]='\0';
-            //printf("%s\n", tagvInfo->tag_data);
             fseek(tagvInfo->fptr_mp3, -1, SEEK_CUR);
         }
     }
     return e_success;
 }
 
+/* Store the tag data
+ * Input: File info structure
+ * Output: File tag data stored in tags Info
+ * Return: e_success or e_failure
+ */
 
 Status tag_data_storage(TagViewInfo *tagvInfo)
 {
@@ -154,6 +159,12 @@ Status tag_data_storage(TagViewInfo *tagvInfo)
     }
     return e_success;
 }
+
+/* View the tag details of mp3 file
+ * Input: File info structure
+ * Output: Show the tag details on the output screen
+ * Return: e_success or e_failure
+ */
 
 Status tag_data_view(TagViewInfo *tagvInfo)
 {

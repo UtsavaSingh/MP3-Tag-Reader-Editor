@@ -4,13 +4,14 @@
 /* User defined types */
 typedef unsigned int uint;
 
-/* Status will be used in fn. return type */
+/* Status will be used in function return type */
 typedef enum
 {
     e_success,
     e_failure
 } Status;
 
+/* Operation type will be used in function return type */
 typedef enum
 {
     e_error,
@@ -20,6 +21,7 @@ typedef enum
     e_unsupported
 } OperationType;
 
+/* Edit Operation type will be used in function return type */
 typedef enum
 {
     e_edit_title,

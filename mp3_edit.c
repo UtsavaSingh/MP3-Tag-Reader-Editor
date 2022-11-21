@@ -2,7 +2,6 @@
 #include <string.h>
 #include "mp3_edit.h"
 #include "types.h"
-//#include "common.h"
 
 /* Function Definitions for Editing Tags */
 
@@ -14,17 +13,17 @@
 
 Status read_and_validate_edit_args(char *argv[], TagEditInfo *tageInfo)
 {
-    if(strcmp(strstr(argv[2], "."), ".mp3") == 0)
+    if(strcmp(strstr(argv[4], "."), ".mp3") == 0)
     {
-        tageInfo ->mp3_fname = argv[2];
+        tageInfo ->mp3_fname = argv[4];
     }
     else
     {
-        printf("ERROR : Source audio file %s extension should be .mp3\n", argv[2]);
+        printf("ERROR : Source audio file %s extension should be .mp3\n", argv[4]);
         return e_failure;
     }
 
-    if(((strcmp(argv[3], "-a")) == 0) || ((strcmp(argv[3], "-t")) == 0) || ((strcmp(argv[3], "-A")) == 0) || ((strcmp(argv[3], "-y")) == 0) || ((strcmp(argv[3], "-g")) == 0) || ((strcmp(argv[3], "-c")) == 0))
+    if(((strcmp(argv[2], "-a")) == 0) || ((strcmp(argv[2], "-t")) == 0) || ((strcmp(argv[2], "-A")) == 0) || ((strcmp(argv[2], "-y")) == 0) || ((strcmp(argv[2], "-g")) == 0) || ((strcmp(argv[2], "-c")) == 0))
     {
         tageInfo->edit_operation = check_edit_operation_type(argv);
     }
@@ -34,43 +33,47 @@ Status read_and_validate_edit_args(char *argv[], TagEditInfo *tageInfo)
         return e_failure;
     }
 
-    tageInfo->edit_data = argv[4];
+    tageInfo->edit_data = argv[3];
 
     return e_success;
 }
 
+/* Read and validate command line argument for edit operation type
+ * Input: Arguments
+ * Return: Edit operation type
+ */
 
 EditOperationType check_edit_operation_type(char *argv[])
 {
-    if((strcmp(argv[3], "-a")) == 0)
+    if((strcmp(argv[2], "-a")) == 0)
     {
         return e_edit_artist;
     }
-    else if((strcmp(argv[3], "-t")) == 0)
+    else if((strcmp(argv[2], "-t")) == 0)
     {
         return e_edit_title;
     }
-    else if((strcmp(argv[3], "-A")) == 0)
+    else if((strcmp(argv[2], "-A")) == 0)
     {
         return e_edit_album;
     }
-    else if((strcmp(argv[3], "-y")) == 0)
+    else if((strcmp(argv[2], "-y")) == 0)
     {
         return e_edit_year;
     }
-    else if((strcmp(argv[3], "-g")) == 0)
+    else if((strcmp(argv[2], "-g")) == 0)
     {
         return e_edit_genre;
     }
-    else if((strcmp(argv[3], "-c")) == 0)
+    else if((strcmp(argv[2], "-c")) == 0)
     {
         return e_edit_composer;
     }
 }
 
-/* Encoding the secret file data to stego image
- * Input: FILE info of image, secret file and stego image
- * Output: Encodes the data in secret to stego image
+/* Editing the tags of mp3 file
+ * Input: FILE info structure
+ * Output: Edit the particular tag chosen by user
  * Return: e_success or e_failure;
  */
 Status do_editing(TagEditInfo *tageInfo)
@@ -92,7 +95,7 @@ Status do_editing(TagEditInfo *tageInfo)
             tag_pos_reader(tageInfo);
         }
         edit_operation(tageInfo);
-        //edited_tag_data_view(tageInfo);
+        edited_tag_data_view(tageInfo);
         return e_success;
     }
     else
@@ -103,14 +106,13 @@ Status do_editing(TagEditInfo *tageInfo)
 }
 
 /*
- * Get File pointer for mp3 file
- * Inputs: File info
- * Output: FILE pointer for mp3 file
+ * Get File pointer for mp3 files
+ * Inputs: File info structure
+ * Output: FILE pointer for mp3 files
  * Return Value: e_success or e_failure, on file errors
  */
 Status open_mp3_files(TagEditInfo *tageInfo)
 {
-    //printf("INFO : Opening mp3 files\n");
     // Mp3 file
     tageInfo->fptr_mp3_old = fopen(tageInfo->mp3_fname, "rb");
     // Do Error handling
@@ -131,6 +133,12 @@ Status open_mp3_files(TagEditInfo *tageInfo)
     }
     return e_success;
 }
+
+/* Read the tag position of mp3 file
+ * Input: File info structure
+ * Output: Read the tags position
+ * Return: e_success or e_failure
+ */
 
 Status tag_pos_reader(TagEditInfo *tageInfo)
 {
@@ -166,6 +174,11 @@ Status tag_pos_reader(TagEditInfo *tageInfo)
     return e_success;
 }
 
+/* Store the tag position of mp3 file
+ * Input: File info structure
+ * Output: Store the tags position
+ * Return: e_success or e_failure
+ */
 
 Status tag_pos_storage(TagEditInfo *tageInfo)
 {
@@ -195,6 +208,12 @@ Status tag_pos_storage(TagEditInfo *tageInfo)
     }
     return e_success;
 }
+
+/* Find the tag position of mp3 file
+ * Input: File info structure
+ * Output: Find the tags position
+ * Return: Tag position
+ */
 
 uint tag_position_finder(TagEditInfo *tageInfo)
 {
@@ -230,6 +249,12 @@ uint tag_position_finder(TagEditInfo *tageInfo)
     }
 }
 
+/* Edit the tag of mp3 file
+ * Input: File info structure
+ * Output: Edited tag
+ * Return: e_success or e_failure
+ */
+
 Status edit_operation(TagEditInfo *tageInfo)
 {
     uint a, n, m;
@@ -258,17 +283,24 @@ Status edit_operation(TagEditInfo *tageInfo)
     return e_success;
 }
 
+/* View the tag details which is updated
+ * Input: File info structure
+ * Output: Show the tag details on the output screen which is updated
+ * Return: e_success or e_failure
+ */
+
 Status edited_tag_data_view(TagEditInfo *tageInfo)
 {
     int size;
-    char data[50];
+    char data[50], ch;
     uint pos = tag_position_finder(tageInfo) + 3;
     fseek(tageInfo->fptr_mp3_new, pos, SEEK_SET);
-    fread(&size, sizeof(char), 1, tageInfo->fptr_mp3_new);
+    fread(&ch, sizeof(char), 1, tageInfo->fptr_mp3_new);
+    size = (int)ch;
     fseek(tageInfo->fptr_mp3_new, 3, SEEK_CUR);
     fread(&data, sizeof(char), size-1, tageInfo->fptr_mp3_new);
-    dash(15); printf(" SELECTED EDIT OPTION "); dash(15); printf("\n");
-    dash(15); printf(" CHANGE THE %s ", tageInfo->edited_title_name); dash(15); printf("\n");
+    data[size-1] = '\0';
+    dash(22); printf(" CHANGE THE %s ", tageInfo->edited_title_name); dash(20); printf("\n\n");
     dash(63); printf("\n\n");
     printf("%-10s  :       %s\n\n", tageInfo->edited_title_name, data);
     dash(63); printf("\n\n");
